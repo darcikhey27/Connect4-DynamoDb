@@ -118,28 +118,14 @@ public class TicTacToeClient extends JFrame implements Runnable {
             // You are free to add any helper methods in this class or other classes.
             // Basically, this client player will retrieve a message from cloud in each while iteration
             // and process it until game over is detected.
-            // Please check the processMessage() method below to gain some clues.
+            String message = dynamoDB.getMessage("status");
+            processMessage(message);
             //System.out.println("while game is not over");
             //
         } // end while
 
 
     } // end method run
-
-    // You have write this method that checks the game board to detect winning status.
-    private boolean isGameOver() {
-        dynamoDB.checkIsGameOver("status");
-
-        return true;
-
-        /* TODO: check the game board to detect winning status.
-        * check the grid to see if there is a connect 4 */
-
-
-
-//        return false;
-    }
-
     // This method is not used currently, but it may give you some hints regarding
     // how one client talks to other client through cloud service(s).
     private void processMessage(String message) {
@@ -151,10 +137,12 @@ public class TicTacToeClient extends JFrame implements Runnable {
 
         } // end if
         else if (message.equals("Opponent moved")) {
-            int location = getOpponentMove(); // Here get move location from opponent
+            int[] location = getOpponentMove(); // Here get move location from opponent
 
-            int row = location / bsize; // calculate row
-            int column = location % bsize; // calculate column
+//            int row = location / bsize; // calculate row
+//            int column = location % bsize; // calculate column
+            int row = location[0];
+            int column = location[1];
             System.out.println("row: "+ row+" "+ " col:"+column);
             setMark(board[row][column], (myMark.equals(X_MARK) ? O_MARK : X_MARK)); // mark move
             displayMessage("Opponent moved. Your turn.\n");
@@ -164,16 +152,18 @@ public class TicTacToeClient extends JFrame implements Runnable {
             displayMessage(message + "\n"); // display the message
     } // end method processMessage
 
+
+    // You have write this method that checks the game board to detect winning status.
+    private boolean isGameOver() {
+        boolean isGameOver = dynamoDB.checkIsGameOver("status");
+        return isGameOver;
+    }
+
+
     //Here get move location from opponent
-    private int getOpponentMove() {
-        // Please write your code here
-
-
-        // todo: write logic to get the location from the opponent
-
-
-
-        return 0;
+    private int[] getOpponentMove() {
+        int location[] = dynamoDB.getLocation("status");
+        return location;
     }
 
     // manipulate outputArea in event-dispatch thread

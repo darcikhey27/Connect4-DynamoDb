@@ -92,4 +92,27 @@ public class Connect4Dynamo {
         return false;
     }
 
+    public String getMessage(String status) {
+        PrimaryKey key = new PrimaryKey("rowcol", status);
+        Item item = table.getItem(key);
+        String message = item.getString("message");
+        if(message == null) {
+            throw new NullPointerException("message is null:");
+        }
+        return message;
+    }
+
+    public int[] getLocation(String status) {
+        PrimaryKey key = new PrimaryKey("rowcol", status);
+        Item item = table.getItem(key);
+        String locationString = item.getString("location");
+        if(locationString == null) {
+            throw new NullPointerException("message is null:");
+        }
+        String[] nums = locationString.split(",");
+        int[] location = new int[2];
+        location[0] = Integer.parseInt(nums[0]);
+        location[1] = Integer.parseInt(nums[1]);
+        return location;
+    }
 }
