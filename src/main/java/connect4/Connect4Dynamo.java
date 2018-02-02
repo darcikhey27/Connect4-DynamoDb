@@ -6,6 +6,7 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
+import com.amazonaws.services.dynamodbv2.document.PrimaryKey;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.GetItemRequest;
@@ -67,12 +68,60 @@ public class Connect4Dynamo {
     }
 
     public void sendModifiedLocation(String location, String myMark) {
-        Item status = new Item().withPrimaryKey("rowcol", "status")
+        String message = "";
+        if(myMark.equals("X")) {
+             message = "Player 2 turn";
+        }
+        else {
+            message = "Player 1 turn";
+        }
+        Item status = new Item().withPrimaryKey("rowcol", location)
                 .withBoolean("gameOver", false)
                 .withBoolean("modified", true)
                 .withString("mark", myMark)
                 .withString("modifiedLocation", location)
-                .withString("message", "game is been modified");
+                .withString("message", message);
         this.uploadItem(status);
+    }
+
+    public boolean checkIsGameOver(String rowcolStatus) {
+       // System.out.println("rowColStatus is "+ rowcolStatus);
+        PrimaryKey key = new PrimaryKey("rowcol", rowcolStatus);
+        Item item = table.getItem(key);
+        boolean isGameOver = item.getBOOL("gameOver");
+
+        if(isGameOver) {
+            return true;
+        }
+        return false;
+    }
+    public boolean checkDidPlayerMove(String rowColStatus) {
+
+
+        return false;
+    }
+
+    public String getMessage(String status) {
+        PrimaryKey key = new PrimaryKey("rowcol", status);
+        Item item = table.getItem(key);
+        String message = item.getString("message");
+        if(message == null) {
+            throw new NullPointerException("message is null:");
+        }
+        return message;
+    }
+
+    public int[] getLocation(String status) {
+        PrimaryKey key = new PrimaryKey("rowcol", status);
+        Item item = table.getItem(key);
+        String locationString = item.getString("location");
+        if(locationString == null) {
+            throw new NullPointerException("message is null:");
+        }
+        String[] nums = locationString.split(",");
+        int[] location = new int[2];
+        location[0] = Integer.parseInt(nums[0]);
+        location[1] = Integer.parseInt(nums[1]);
+        return location;
     }
 }
