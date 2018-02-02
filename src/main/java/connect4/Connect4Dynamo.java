@@ -6,9 +6,11 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
+import com.amazonaws.services.dynamodbv2.document.PrimaryKey;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.GetItemRequest;
+import com.amazonaws.services.dynamodbv2.model.GetItemResult;
 
 import java.util.*;
 
@@ -55,7 +57,7 @@ public class Connect4Dynamo {
                     System.out.format("%s: %s\n", key, returned_item.get(key).toString());
                 }
             } else {
-                System.out.format("No item found with the key %s!\n", "somekey");
+                System.out.println("Error connecting to dynamo");
             }
         } catch (AmazonServiceException e) {
             System.err.println(e.getErrorMessage());
@@ -73,4 +75,21 @@ public class Connect4Dynamo {
                 .withString("message", "game is been modified");
         this.uploadItem(status);
     }
+    public boolean checkIsGameOver(String rowcolStatus) {
+        System.out.println("rowColStatus is "+ rowcolStatus);
+        PrimaryKey key = new PrimaryKey("rowcol", rowcolStatus);
+        Item item = table.getItem(key);
+        boolean isGameOver = item.getBOOL("gameOver");
+
+        if(isGameOver) {
+            return true;
+        }
+        return false;
+    }
+    public boolean checkDidPlayerMove(String rowColStatus) {
+
+
+        return false;
+    }
+
 }

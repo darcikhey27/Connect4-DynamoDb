@@ -44,6 +44,7 @@ public class TicTacToeClient extends JFrame implements Runnable {
         boardPanel.setLayout(new GridLayout(bsize, bsize, 0, 0)); //was 3
         board = new Square[bsize][bsize]; // create board
 
+        // create my dynamo tables here
         dynamoDB = new Connect4Dynamo();
         dynamoDB.connectToTable();
         Item tableRow = null;
@@ -96,7 +97,8 @@ public class TicTacToeClient extends JFrame implements Runnable {
 
     // control thread that allows continuous update of displayArea
     public void run() {
-        myMark = "X"; //Get player's mark (X or O). We hard coded here in demo. In your implementation, you may get this mark dynamically
+        myMark = "O"; //Get player's mark (X or O). We hard coded here in demo.
+        // In your implementation, you may get this mark dynamically
         //from the cloud service. This is the initial state of the game.
 
         SwingUtilities.invokeLater(
@@ -126,16 +128,16 @@ public class TicTacToeClient extends JFrame implements Runnable {
 
     // You have write this method that checks the game board to detect winning status.
     private boolean isGameOver() {
+        dynamoDB.checkIsGameOver("status");
 
-
-
+        return true;
 
         /* TODO: check the game board to detect winning status.
         * check the grid to see if there is a connect 4 */
 
 
 
-        return false;
+//        return false;
     }
 
     // This method is not used currently, but it may give you some hints regarding
