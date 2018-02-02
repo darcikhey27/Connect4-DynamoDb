@@ -35,10 +35,10 @@ public class Connect4Dynamo {
 
 
     public static void main(String ... args) {
-        Connect4Dynamo connect4Dynamo = new Connect4Dynamo();
-        connect4Dynamo.connectToTable();
-        //connect4Dynamo.uploadItem();
-        connect4Dynamo.getItem();
+//        Connect4Dynamo connect4Dynamo = new Connect4Dynamo();
+//        connect4Dynamo.connectToTable();
+//        //connect4Dynamo.uploadItem();
+//        connect4Dynamo.getItem();
     }
 
     private void getItem() {
