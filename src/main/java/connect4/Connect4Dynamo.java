@@ -37,10 +37,12 @@ public class Connect4Dynamo {
 
 
     public static void main(String ... args) {
+
 //        Connect4Dynamo connect4Dynamo = new Connect4Dynamo();
 //        connect4Dynamo.connectToTable();
 //        //connect4Dynamo.uploadItem();
 //        connect4Dynamo.getItem();
+
     }
 
     private void getItem() {
@@ -66,21 +68,24 @@ public class Connect4Dynamo {
         }
     }
 
-    public void sendModifiedLocation(String location, String myMark, String message) {
-        Item item = new Item().withPrimaryKey("rowcol", location)
+
+    public String getMark() {
+        PrimaryKey key = new PrimaryKey("rowcol", "status");
+        Item item = table.getItem(key);
+        return item.getString("mark");
+    }
+    public void sendModifiedLocation(String location, String myMark, String msg) {
+        Item item = new Item().withPrimaryKey("rowcol", "status")
                 .withBoolean("gameOver", false)
                 .withBoolean("modified", true)
                 .withString("mark", myMark)
                 .withString("modifiedLocation", location)
-                .withString("message", message);
+                .withString("message", msg);
         this.uploadItem(item);
-        Item status = new Item().withPrimaryKey("rowcol", "status")
-                .withString("message", message)
-                .withString("modifiedLocation", location);
-        this.uploadItem(status);
     }
+
     public boolean checkIsGameOver(String rowcolStatus) {
-        System.out.println("rowColStatus is "+ rowcolStatus);
+       // System.out.println("rowColStatus is "+ rowcolStatus);
         PrimaryKey key = new PrimaryKey("rowcol", rowcolStatus);
         Item item = table.getItem(key);
         boolean isGameOver = item.getBOOL("gameOver");
@@ -90,9 +95,8 @@ public class Connect4Dynamo {
         }
         return false;
     }
+
     public boolean checkDidPlayerMove(String rowColStatus) {
-
-
         return false;
     }
 
