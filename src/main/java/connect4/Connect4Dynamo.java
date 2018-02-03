@@ -66,13 +66,17 @@ public class Connect4Dynamo {
         }
     }
 
-    public void sendModifiedLocation(String location, String myMark) {
-        Item status = new Item().withPrimaryKey("rowcol", "status")
+    public void sendModifiedLocation(String location, String myMark, String message) {
+        Item item = new Item().withPrimaryKey("rowcol", location)
                 .withBoolean("gameOver", false)
                 .withBoolean("modified", true)
                 .withString("mark", myMark)
                 .withString("modifiedLocation", location)
-                .withString("message", "game is been modified");
+                .withString("message", message);
+        this.uploadItem(item);
+        Item status = new Item().withPrimaryKey("rowcol", "status")
+                .withString("message", message)
+                .withString("modifiedLocation", location);
         this.uploadItem(status);
     }
     public boolean checkIsGameOver(String rowcolStatus) {

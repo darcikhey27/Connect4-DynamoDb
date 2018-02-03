@@ -31,6 +31,7 @@ public class TicTacToeClient extends JFrame implements Runnable {
     private final String X_MARK = "X"; // mark for first client
     private final String O_MARK = "O"; // mark for second client
     private final int bsize = 16;
+    private static  String message;
 
     private Connect4Dynamo dynamoDB;
     //private Table table;
@@ -57,19 +58,19 @@ public class TicTacToeClient extends JFrame implements Runnable {
                 // create square. initially the symbol on each square is a white space.
                 board[row][column] = new Square(" ", row * bsize + column);
                 boardPanel.add(board[row][column]); // add square
-                String key = row+","+column;
-                tableRow = new Item().withPrimaryKey("rowcol", key)
-                .withString("mark", ".");
-                // add this item to our board dynamoDB table
-                dynamoDB.uploadItem(tableRow);
+//                String key = row+","+column;
+//                tableRow = new Item().withPrimaryKey("rowcol", key)
+//                .withString("mark", ".");
+//                // add this item to our board dynamoDB table
+//                dynamoDB.uploadItem(tableRow);
             } // end inner for
 
-            Item status = new Item().withPrimaryKey("rowcol", "status")
-                    .withBoolean("gameOver", false)
-                    .withBoolean("modified", false)
-                    .withString("modifiedLocation", "no yet")
-                    .withString("message", "game is starting");
-            dynamoDB.uploadItem(status);
+//            Item status = new Item().withPrimaryKey("rowcol", "status")
+//                    .withBoolean("gameOver", false)
+//                    .withBoolean("modified", false)
+//                    .withString("modifiedLocation", "no yet")
+//                    .withString("message", "game is starting");
+//            dynamoDB.uploadItem(status);
 
         } // end outer for
 
@@ -120,6 +121,8 @@ public class TicTacToeClient extends JFrame implements Runnable {
             // and process it until game over is detected.
             String message = dynamoDB.getMessage("status");
             processMessage(message);
+
+            System.out.println("break");
             //System.out.println("while game is not over");
             //
         } // end while
@@ -129,27 +132,44 @@ public class TicTacToeClient extends JFrame implements Runnable {
     // This method is not used currently, but it may give you some hints regarding
     // how one client talks to other client through cloud service(s).
     private void processMessage(String message) {
-        // valid move occurred
-        if (message.equals("Opponent Won")) {
-            displayMessage("Game over, Opponent won.\n");
-            // then highlight the winning locations down below.
 
+        if(message.equals("begin")) {
+            // player1 turn
+            message = "Player1 moved";
+            // player 1 go
 
-        } // end if
-        else if (message.equals("Opponent moved")) {
-            int[] location = getOpponentMove(); // Here get move location from opponent
+        }
+        else if(message.equals("Player1 moved")) {
+            // player 2 go
+        }
+        else if(message.equals("Player2 moved")) {
+            // player 1 go
+        }
+        else {
+            message = "Waiting for player to move";
+        }
 
-//            int row = location / bsize; // calculate row
-//            int column = location % bsize; // calculate column
-            int row = location[0];
-            int column = location[1];
-            System.out.println("row: "+ row+" "+ " col:"+column);
-            setMark(board[row][column], (myMark.equals(X_MARK) ? O_MARK : X_MARK)); // mark move
-            displayMessage("Opponent moved. Your turn.\n");
-            myTurn = true; // now this client's turn
-        } // end else if
-        else
-            displayMessage(message + "\n"); // display the message
+//        // valid move occurred
+//        if (message.equals("Opponent Won")) {
+//            displayMessage("Game over, Opponent won.\n");
+//            // then highlight the winning locations down below.
+//
+//
+//        } // end if
+//        else if (message.equals("Opponent moved")) {
+//            int[] location = getOpponentMove(); // Here get move location from opponent
+//
+////            int row = location / bsize; // calculate row
+////            int column = location % bsize; // calculate column
+//            int row = location[0];
+//            int column = location[1];
+//            System.out.println("row: "+ row+" "+ " col:"+column);
+//            setMark(board[row][column], (myMark.equals(X_MARK) ? O_MARK : X_MARK)); // mark move
+//            displayMessage("Opponent moved. Your turn.\n");
+//            myTurn = true; // now this client's turn
+//        } // end else if
+//        else
+//            displayMessage(message + "\n"); // display the message
     } // end method processMessage
 
 
@@ -224,7 +244,7 @@ public class TicTacToeClient extends JFrame implements Runnable {
                             int column = location % bsize; // calculate column
                             System.out.println("row: "+ row+" "+ " col:"+column);
                             String location = row+","+column;
-                            dynamoDB.sendModifiedLocation(location, myMark);
+                            dynamoDB.sendModifiedLocation(location, myMark, message);
                             /* todo send this location to the cloud service
 
                                 You may have to send location of this square to
