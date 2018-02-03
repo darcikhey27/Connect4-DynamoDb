@@ -67,21 +67,19 @@ public class Connect4Dynamo {
         }
     }
 
-    public void sendModifiedLocation(String location, String myMark) {
-        String message = "";
-        if(myMark.equals("X")) {
-             message = "Player 2 turn";
-        }
-        else {
-            message = "Player 1 turn";
-        }
-        Item status = new Item().withPrimaryKey("rowcol", location)
+    public String getMark() {
+        PrimaryKey key = new PrimaryKey("rowcol", "status");
+        Item item = table.getItem(key);
+        return item.getString("mark");
+    }
+    public void sendModifiedLocation(String location, String myMark, String msg) {
+        Item item = new Item().withPrimaryKey("rowcol", "status")
                 .withBoolean("gameOver", false)
                 .withBoolean("modified", true)
                 .withString("mark", myMark)
                 .withString("modifiedLocation", location)
-                .withString("message", message);
-        this.uploadItem(status);
+                .withString("message", msg);
+        this.uploadItem(item);
     }
 
     public boolean checkIsGameOver(String rowcolStatus) {
@@ -114,7 +112,7 @@ public class Connect4Dynamo {
     public int[] getLocation(String status) {
         PrimaryKey key = new PrimaryKey("rowcol", status);
         Item item = table.getItem(key);
-        String locationString = item.getString("location");
+        String locationString = item.getString("modifiedLocation");
         if(locationString == null) {
             throw new NullPointerException("message is null:");
         }
