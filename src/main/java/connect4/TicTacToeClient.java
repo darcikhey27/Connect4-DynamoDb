@@ -97,7 +97,8 @@ public class TicTacToeClient extends JFrame implements Runnable {
 
     // control thread that allows continuous update of displayArea
     public void run() {
-        myMark = dynamoDB.getMark(); //Get player's mark (X or O). We hard coded here in demo. In your implementation, you may get this mark dynamically
+        myMark = "X";
+        //myMark = dynamoDB.getMark(); //Get player's mark (X or O). We hard coded here in demo. In your implementation, you may get this mark dynamically
         //from the cloud service. This is the initial state of the game.
 
         SwingUtilities.invokeLater(

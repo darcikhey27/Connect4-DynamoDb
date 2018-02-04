@@ -70,7 +70,7 @@ public class Connect4Dynamo {
     public String getMark() {
         PrimaryKey key = new PrimaryKey("rowcol", "status");
         Item item = table.getItem(key);
-        return item.getString("mark");
+        return item.getString("markX");
     }
     public void sendModifiedLocation(String location, String myMark, String msg) {
         Item item = new Item().withPrimaryKey("rowcol", "status")
